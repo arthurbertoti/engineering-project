@@ -1,0 +1,76 @@
+{
+  "plano_automacao": [
+    {
+      "tipo_teste": "Unitários",
+      "cenarios": "Cálculo de preço (FP-REQ-005), Acúmulo de pontos (CT-023)",
+      "ferramenta": "JUnit / Jest",
+      "linguagem": "Java / JavaScript",
+      "automacao_pct": "100%",
+      "timeline": "Sprint 1",
+      "responsavel": "Developer"
+    },
+    {
+      "tipo_teste": "Integração",
+      "cenarios": "Pedido → Pagamento (CT-019), Sincronização (CT-039)",
+      "ferramenta": "RestAssured / Postman",
+      "linguagem": "Java / groovy",
+      "automacao_pct": "100%",
+      "timeline": "Sprint 1-2",
+      "responsavel": "Developer + QA"
+    },
+    {
+      "tipo_teste": "Funcional (Felizes)",
+      "cenarios": "CT-011, CT-012, CT-039",
+      "ferramenta": "Selenium / Appium",
+      "linguagem": "Java / Python",
+      "automacao_pct": "80%",
+      "timeline": "Sprint 2",
+      "responsavel": "QA Analyst"
+    },
+    {
+      "tipo_teste": "Funcional (Negativos)",
+      "cenarios": "CT-018, CT-022, CT-036",
+      "ferramenta": "Selenium / Appium",
+      "linguagem": "Java / Python",
+      "automacao_pct": "60%",
+      "timeline": "Sprint 2-3",
+      "responsavel": "QA Analyst"
+    },
+    {
+      "tipo_teste": "Performance",
+      "cenarios": "CT-040, CT-043",
+      "ferramenta": "JMeter",
+      "linguagem": "Groovy (JMeter scripts)",
+      "automacao_pct": "100%",
+      "timeline": "Sprint 3",
+      "responsavel": "QA Analyst"
+    },
+    {
+      "tipo_teste": "Segurança",
+      "cenarios": "CT-045, CT-048, CT-050",
+      "ferramenta": "OWASP ZAP / Scripts SQL",
+      "linguagem": "Python / SQL",
+      "automacao_pct": "70%",
+      "timeline": "Sprint 3-4",
+      "responsavel": "QA Lead"
+    },
+    {
+      "tipo_teste": "Regressão",
+      "cenarios": "Todos os cenários anteriores",
+      "ferramenta": "JUnit + Postman + Selenium",
+      "linguagem": "Mix",
+      "automacao_pct": "100%",
+      "timeline": "Cada sprint",
+      "responsavel": "Developer + QA"
+    },
+    {
+      "tipo_teste": "UAT",
+      "cenarios": "Todas as funcionalidades",
+      "ferramenta": "Manual (scripts)",
+      "linguagem": "N/A",
+      "automacao_pct": "0% (manual)",
+      "timeline": "Sprint final",
+      "responsavel": "Product Owner"
+    }
+  ]
+}

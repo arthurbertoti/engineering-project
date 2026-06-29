@@ -1,0 +1,687 @@
+{
+  "cenarios": [
+    {
+      "id": "CT-011",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RF005",
+        "FP-REQ-001",
+        "FP-REQ-002"
+      ],
+      "descricao": "Cliente cria um pedido completo via app móvel, seleciona produtos, aplica desconto de fidelização e submete para pagamento com sucesso",
+      "pre_condicoes": [
+        "App instalado em iOS 12+ ou Android 8+",
+        "Cliente autenticado (RF001)",
+        "Unidade \"Recife - Centro\" selecionada",
+        "Produtos disponíveis no cardápio",
+        "Cliente possui 100 pontos de fidelização"
+      ],
+      "passos_execucao": [
+        "1. Cliente abre app e visualiza cardápio da unidade (RF003)",
+        "2. Cliente seleciona \"Tapioca de Carne\" (R$ 15,00) — quantidade 2",
+        "3. Cliente seleciona \"Suco de Fruta\" (R$ 8,00) — quantidade 1",
+        "4. Cliente visualiza subtotal: R$ 38,00",
+        "5. Cliente aplica desconto de 100 pontos (10% = R$ 3,80)",
+        "6. Cliente visualiza total final: R$ 34,20",
+        "7. Cliente clica em \"Finalizar Pedido\"",
+        "8. Sistema envia requisição ao API Gateway",
+        "9. Gateway roteia para módulo de Pedidos (Camada 3)",
+        "10. Módulo de Pedidos valida estoque (RF017) e cálculo (FP-REQ-005)",
+        "11. Pedido criado com status \"Recebido\"",
+        "12. Cliente visualiza tela de confirmação com ID do pedido"
+      ],
+      "dados_entrada": [
+        "Nome cliente: \"João Silva\"",
+        "CPF: 123.456.789-00",
+        "Produtos: Tapioca de Carne (2x) + Suco (1x)",
+        "Desconto por pontos: 100 pontos (R$ 1,00 cada)",
+        "Total esperado: R$ 34,20"
+      ],
+      "resultado_esperado": [
+        "Pedido criado com sucesso",
+        "Status do pedido: \"Recebido\"",
+        "ID do pedido gerado e exibido",
+        "Saldo de pontos atualizado (100 → 0 pontos)",
+        "Confirmação exibida em < 3 segundos"
+      ],
+      "criterio_aceite": [
+        "Pedido criado no banco de dados",
+        "Cálculo de preço correto (subtotal - desconto = total)",
+        "Estoque debitado para os produtos selecionados",
+        "Pontos de fidelização debitados corretamente",
+        "Latência ≤ 3 segundos (FP-REQ-001)",
+        "Mensagem de confirmação clara e sem ambiguidades"
+      ],
+      "ferramenta": "Appium (mobile) + Postman (validação de API)",
+      "automacao": "Sim — Appium script para fluxo; Postman para validação de payload"
+    },
+    {
+      "id": "CT-012",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RF005",
+        "FP-REQ-001",
+        "RNF016"
+      ],
+      "descricao": "Cliente cria pedido completo via totem touchscreen (43\"), sem intervenção de atendente, e conclui em 3 cliques",
+      "pre_condicoes": [
+        "Totem ligado e conectado à rede (Camada 2)",
+        "Interface responsiva carregada em < 1.5s (RNF003)",
+        "Cliente iniciou sessão anônima (sem login obrigatório)",
+        "Cardápio da unidade atualizado"
+      ],
+      "passos_execucao": [
+        "1. Cliente toca em \"Fazer Pedido\" no totem (1º clique)",
+        "2. Tela de seleção de produtos exibida",
+        "3. Cliente toca em \"Cuscuz Recheado\" (R$ 12,00)",
+        "4. Tela de resumo exibida com opção \"Confirmar\" (2º clique)",
+        "5. Tela de pagamento exibida",
+        "6. Cliente visualiza QR Code para pagamento via PIX ou NFC",
+        "7. Cliente toca em \"Confirmar Pagamento\" (3º clique)",
+        "8. Sistema aguarda confirmação do gateway (simulado)",
+        "9. Após confirmação, pedido criado e número exibido no totem"
+      ],
+      "dados_entrada": [
+        "Produto: Cuscuz Recheado",
+        "Quantidade: 1",
+        "Preço: R$ 12,00",
+        "Método pagamento: PIX (simulado)"
+      ],
+      "resultado_esperado": [
+        "Pedido criado em ≤ 3 cliques",
+        "Número do pedido exibido em grande fonte (acessível)",
+        "Tempo total do fluxo: ≤ 5 segundos",
+        "Mensagem de sucesso clara"
+      ],
+      "criterio_aceite": [
+        "Pedido concluído em exatamente 3 cliques",
+        "Tempo de carregamento de cada tela ≤ 1.5s",
+        "Letras legíveis em tela 43\"",
+        "Pedido sincronizado na cozinha em < 5s (FP-REQ-002)",
+        "Novo usuário consegue completar sem ajuda"
+      ],
+      "ferramenta": "Manual (simulação de toque) + JMeter (tempo de resposta)",
+      "automacao": "Parcial — JMeter para medir latência; manual para usabilidade"
+    },
+    {
+      "id": "CT-019",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RF008",
+        "FP-REQ-001",
+        "FP-REQ-006"
+      ],
+      "descricao": "Sistema solicita pagamento ao gateway externo e recebe confirmação de aprovação, atualizando status do pedido",
+      "pre_condicoes": [
+        "Pedido criado e armazenado no BD (RF005)",
+        "Status do pedido: \"Recebido\"",
+        "Gateway de pagamento simulado (WireMock) disponível",
+        "Payload de requisição válido"
+      ],
+      "passos_execucao": [
+        "1. Sistema recupera dados do pedido do BD",
+        "2. Sistema monta requisição: { pedido_id, valor, cliente_id, metodo }",
+        "3. Sistema envia POST /pagamento ao gateway (Camada 5)",
+        "4. Gateway simula validação (WireMock retorna sucesso)",
+        "5. Sistema recebe resposta: { status: \"APROVADO\", transacao_id: \"TRX123\" }",
+        "6. Sistema registra resultado no BD (RF009)",
+        "7. Sistema atualiza status do pedido para \"Pago\"",
+        "8. Sistema envia notificação à cozinha e ao cliente"
+      ],
+      "dados_entrada": [
+        "pedido_id: \"PED-2025-001\"",
+        "valor: 34.20",
+        "cliente_id: \"CLI-12345\"",
+        "metodo: \"PIX\"",
+        "transacao_id (resposta): \"TRX123\""
+      ],
+      "resultado_esperado": [
+        "Resposta recebida do gateway em < 3 segundos",
+        "Status do pedido atualizado para \"Pago\"",
+        "Transação registrada no BD com timestamp",
+        "Log de auditoria criado"
+      ],
+      "criterio_aceite": [
+        "Requisição enviada com payload correto",
+        "Resposta do gateway processada corretamente",
+        "Status atualizado no BD",
+        "Zero pedidos \"pendurados\" (com pagamento pendente indefinido)",
+        "Latência total ≤ 3s (FP-REQ-001)",
+        "Log registra quem, quando, qual valor"
+      ],
+      "ferramenta": "Postman (requisição manual) / RestAssured (teste automatizado)",
+      "automacao": "Sim — RestAssured para validar contrato de API com gateway"
+    },
+    {
+      "id": "CT-023",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RF010",
+        "FP-REQ-005"
+      ],
+      "descricao": "Cliente realiza pedido pagando R$ 100,00 e acumula 100 pontos (1 ponto = R$ 1,00)",
+      "pre_condicoes": [
+        "Cliente autenticado e consentimento LGPD aceito (RF013)",
+        "Pedido com valor final: R$ 100,00",
+        "Saldo de pontos anterior: 50 pontos"
+      ],
+      "passos_execucao": [
+        "1. Cliente cria pedido (passos resumidos)",
+        "2. Pedido com valor R$ 100,00 enviado para módulo de Fidelização",
+        "3. Sistema calcula pontos: 100,00 × 1 = 100 pontos",
+        "4. Sistema atualiza saldo do cliente: 50 + 100 = 150 pontos",
+        "5. Sistema registra acúmulo no histórico (auditoria LGPD)",
+        "6. Cliente visualiza notificação: \"Parabéns! Você acumulou 100 pontos. Saldo total: 150\""
+      ],
+      "dados_entrada": [
+        "cliente_id: \"CLI-67890\"",
+        "valor_pedido: 100.00",
+        "taxa_acumulo: 1 ponto/real",
+        "saldo_anterior: 50"
+      ],
+      "resultado_esperado": [
+        "Saldo atualizado para 150 pontos",
+        "Histórico registrado com timestamp, cliente_id, pontos_adicionados",
+        "Notificação enviada ao cliente"
+      ],
+      "criterio_aceite": [
+        "Cálculo correto (100 pontos acumulados)",
+        "Saldo refletido na conta do cliente",
+        "Histórico registrado para auditoria",
+        "Notificação exibida sem erros",
+        "Consentimento LGPD verificado antes de acumular"
+      ],
+      "ferramenta": "Postman / JUnit",
+      "automacao": "Sim — teste unitário para cálculo + integração para atualização no BD"
+    },
+    {
+      "id": "CT-039",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RF020",
+        "FP-REQ-002",
+        "FP-REQ-008"
+      ],
+      "descricao": "Pedido criado no app aparece imediatamente no totem, balcão e na cozinha com dados idênticos",
+      "pre_condicoes": [
+        "Cliente cria pedido no app (CT-011)",
+        "Fila de mensagens (Camada 4) funcionando",
+        "Todos os 4 canais conectados à mesma API"
+      ],
+      "passos_execucao": [
+        "1. Cliente cria pedido no app: \"Tapioca + Suco\" (CT-011)",
+        "2. Pedido enviado ao API Gateway (Camada 2)",
+        "3. Sistema publica mensagem na fila: \"novo_pedido { id, cliente, produtos, timestamp }\"",
+        "4. Fila distribui mensagem para todos os canais (app, totem, balcão, cozinha)",
+        "5. App atualiza tela do cliente: \"Pedido #001 — Recebido\"",
+        "6. Totem próximo exibe: \"Pedido #001 — Tapioca, Suco\"",
+        "7. Balcão recebe: \"Pedido #001 — Para João Silva\"",
+        "8. Cozinha recebe: \"Pedido #001 — Tapioca, Suco — PREPARAR\""
+      ],
+      "dados_entrada": [
+        "pedido_id: \"PED-001\"",
+        "cliente: \"João Silva\"",
+        "produtos: [ \"Tapioca de Carne\", \"Suco de Fruta\" ]",
+        "timestamp criação: \"2025-06-23 12:30:45\""
+      ],
+      "resultado_esperado": [
+        "Pedido visível em todos os 4 canais dentro de 5 segundos",
+        "Dados idênticos em todos os canais (sem divergências)",
+        "Timestamp sincronizado",
+        "Zero perda de informações"
+      ],
+      "criterio_aceite": [
+        "Pedido aparece em ≤ 5s em cada canal (FP-REQ-002)",
+        "100 pedidos testados → 100 sincronizados corretamente",
+        "Nenhuma divergência de dados",
+        "Fila não perde mensagens (RPO ≤ 5 min)",
+        "Log de sincronização registrado"
+      ],
+      "ferramenta": "Postman (criar pedido) + Manual (verificar 4 canais) / Selenium (automatizar verificação)",
+      "automacao": "Parcial — Selenium para verificar UI em todos os canais"
+    },
+    {
+      "id": "CT-040",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RNF001",
+        "FP-REQ-001"
+      ],
+      "descricao": "Sistema processa requisições de leitura (cardápio, status de pedido) com latência p95 ≤ 2 segundos sob carga normal (100 RPS)",
+      "pre_condicoes": [
+        "API Gateway operacional (Camada 2)",
+        "Banco de dados com dados de teste realistas (1000+ produtos)",
+        "JMeter configurado e conectado ao servidor de testes",
+        "Cache (Redis) alimentado"
+      ],
+      "passos_execucao": [
+        "1. Inicializar teste JMeter com thread group: 100 usuários",
+        "2. Ramp-up: 30 segundos (adiciona 3-4 usuários por segundo)",
+        "3. Duração: 10 minutos de teste sustentado",
+        "4. Requisição: GET /api/cardapio/{unidade_id}",
+        "5. Coletar latência de cada requisição",
+        "6. Calcular percentil 95 (p95)",
+        "7. Análise: latência p95 ≤ 2 segundos",
+        "8. Gerar relatório com gráficos (latência vs. tempo)"
+      ],
+      "dados_entrada": [
+        "unidade_id: \"REC-001\" (Recife)",
+        "threads: 100",
+        "ramp-up: 30s",
+        "duration: 600s (10 min)",
+        "think time: 1s entre requisições"
+      ],
+      "resultado_esperado": [
+        "Latência média: ~800ms",
+        "Latência p95: ≤ 2000ms",
+        "Taxa de erro: < 0.1%",
+        "Throughput: ~16-20 RPS (100 / 5-6s por ciclo)"
+      ],
+      "criterio_aceite": [
+        "p95 latência ≤ 2000ms",
+        "Zero timeout (504)",
+        "Taxa de erro < 0.1%",
+        "Sem degradação de memória ao longo do teste",
+        "Relatório JMeter gerado e anexado"
+      ],
+      "ferramenta": "JMeter",
+      "automacao": "Sim — teste automatizado JMeter"
+    },
+    {
+      "id": "CT-043",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RNF004",
+        "FP-REQ-007"
+      ],
+      "descricao": "Sistema permanece disponível ≥ 99,5% do tempo (máx. 3,6h downtime/mês) durante período de teste de 30 dias",
+      "pre_condicoes": [
+        "Sistema em produção ou staging com monitoramento contínuo",
+        "Ferramenta de monitoramento configurada (ex: Uptime Robot, Datadog)",
+        "Alertas de downtime ativados"
+      ],
+      "passos_execucao": [
+        "1. Configurar monitoramento de uptime por 30 dias",
+        "2. Realizar checks a cada 5 minutos",
+        "3. Registrar todos os eventos de downtime (data, hora, duração, causa)",
+        "4. Calcular uptime: (tempo operacional / tempo total) × 100",
+        "5. Documentar qualquer indisponibilidade",
+        "6. Gerar relatório mensal"
+      ],
+      "dados_entrada": [
+        "Período: 30 dias (43.200 minutos)",
+        "Downtime máximo permitido: 216 minutos (3,6 horas)",
+        "Frequência de check: a cada 5 minutos"
+      ],
+      "resultado_esperado": [
+        "Uptime calculado: (tempo_ativo / 43.200) × 100 ≥ 99,5%",
+        "Downtime total ≤ 216 minutos",
+        "Tempo de recuperação (RTO) ≤ 15 minutos"
+      ],
+      "criterio_aceite": [
+        "Uptime ≥ 99,5% documentado",
+        "Relatório de disponibilidade gerado",
+        "Qualquer downtime investigado e documentado",
+        "Plano de contingência ativado se limite atingido"
+      ],
+      "ferramenta": "Uptime Robot / Datadog ou similar",
+      "automacao": "Sim — monitoramento contínuo automatizado"
+    },
+    {
+      "id": "CT-047",
+      "tipo": "feliz",
+      "requisito_vinculado": [
+        "RNF010",
+        "FP-REQ-004"
+      ],
+      "descricao": "Todas as comunicações entre cliente e servidor são criptografadas com HTTPS/TLS 1.2 ou superior",
+      "pre_condicoes": [
+        "Certificado SSL/TLS válido instalado no servidor",
+        "OWASP ZAP configurado",
+        "Ferramentas de inspeção de rede disponíveis"
+      ],
+      "passos_execucao": [
+        "1. Capturar tráfego entre cliente (navegador/app) e servidor",
+        "2. Verificar protocolo: deve ser HTTPS, não HTTP",
+        "3. Verificar versão TLS: 1.2+ (não SSLv3 ou TLS 1.0)",
+        "4. Verificar certificado: válido, não expirado",
+        "5. Tentar acessar por HTTP: deve ser redirecionado para HTTPS",
+        "6. Analisar Headers: deve conter \"Strict-Transport-Security\"",
+        "7. Executar OWASP ZAP scan em busca de vulnerabilidades SSL/TLS"
+      ],
+      "dados_entrada": [
+        "URL da API: https://api.raizesdonordeste.com.br",
+        "Certificado esperado: TLS 1.2+",
+        "Ciphers: SHA256 ou melhor"
+      ],
+      "resultado_esperado": [
+        "100% das requisições em HTTPS",
+        "Certificado válido e confiável",
+        "TLS 1.2+",
+        "Zero downgrade para HTTP",
+        "Zero vulnerabilidades críticas SSL/TLS"
+      ],
+      "criterio_aceite": [
+        "Todo tráfego é HTTPS (não há HTTP)",
+        "TLS ≥ 1.2",
+        "Certificado válido (não expirado)",
+        "HSTS header presente",
+        "Relatório OWASP ZAP sem findings críticos"
+      ],
+      "ferramenta": "OWASP ZAP / Burp Suite (opcional)",
+      "automacao": "Parcial — OWASP ZAP scan automatizado"
+    },
+    {
+      "id": "CT-018",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RF005",
+        "RNF016"
+      ],
+      "descricao": "Cliente tenta criar pedido fora do horário de funcionamento (ex.: 23h) e sistema exibe mensagem de erro clara",
+      "pre_condicoes": [
+        "Cliente autenticado",
+        "Unidade com horário de funcionamento: 06:00 - 22:30",
+        "Relógio do sistema simulado para 23:00 (fora do horário)"
+      ],
+      "passos_execucao": [
+        "1. Cliente abre app às 23:00",
+        "2. Cliente tenta acessar cardápio",
+        "3. Sistema verifica horário de funcionamento",
+        "4. Sistema detecta: hora_atual (23:00) > hora_fechamento (22:30)",
+        "5. Sistema exibe mensagem: \"Desculpe, estamos fechados. Abrimos amanhã às 6:00\"",
+        "6. Botão \"Fazer Pedido\" desabilitado e cinzento",
+        "7. Cliente visualiza opção \"Agendar para amanhã\""
+      ],
+      "dados_entrada": [
+        "unidade_id: \"REC-001\"",
+        "horario_funcionamento: \"06:00 - 22:30\"",
+        "hora_atual_simulada: \"23:00\""
+      ],
+      "resultado_esperado": [
+        "Mensagem de erro exibida em < 2 segundos",
+        "Mensagem clara e sem jargão técnico",
+        "Botão de pedido desabilitado",
+        "Opção de agendamento oferecida"
+      ],
+      "criterio_aceite": [
+        "Mensagem exibida em português claro",
+        "Horário de abertura informado",
+        "Nenhum erro técnico exibido (sem stack trace)",
+        "Cliente pode agendar para próximo horário",
+        "Log registra tentativa de pedido fora de horário"
+      ],
+      "ferramenta": "Appium / Selenium (simular horário no teste)",
+      "automacao": "Sim — automatizar variação de horário simulado"
+    },
+    {
+      "id": "CT-022",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RF009",
+        "FP-REQ-006"
+      ],
+      "descricao": "Gateway de pagamento rejeita a transação (ex.: cartão inválido) e sistema desfaz o pedido, liberando estoque automaticamente",
+      "pre_condicoes": [
+        "Pedido criado e enviado para pagamento",
+        "Status pedido: \"Aguardando Pagamento\"",
+        "Estoque já foi reservado durante criação do pedido",
+        "Gateway simulado (WireMock) configurado para retornar REJEIÇÃO"
+      ],
+      "passos_execucao": [
+        "1. Cliente cria pedido (CT-011)",
+        "2. Pedido criado com status \"Recebido\"",
+        "3. Estoque reservado: Tapioca -2, Suco -1",
+        "4. Sistema envia requisição de pagamento ao gateway",
+        "5. Gateway retorna: { status: \"REJEITADO\", motivo: \"Cartão Inválido\" }",
+        "6. Sistema recebe resposta de rejeição",
+        "7. Sistema inicia rollback: status muda para \"Cancelado\", estoque é liberado (Tapioca +2, Suco +1), log de auditoria registra cancelamento",
+        "8. Sistema envia notificação ao cliente: \"Pagamento recusado. Tente outro cartão ou método.\"",
+        "9. Pedido aparece no histórico como \"Cancelado\""
+      ],
+      "dados_entrada": [
+        "pedido_id: \"PED-002\"",
+        "produtos_reservados: Tapioca ×2, Suco ×1",
+        "resposta_gateway: { status: \"REJEITADO\" }",
+        "motivo: \"Cartão Inválido\""
+      ],
+      "resultado_esperado": [
+        "Pedido status: \"Cancelado\"",
+        "Estoque liberado completamente",
+        "Zero pedidos \"pendurados\"",
+        "Notificação enviada em < 3 segundos",
+        "Log registra quem, quando, por quê"
+      ],
+      "criterio_aceite": [
+        "Rollback executado 100% de sucesso em 50 testes",
+        "Estoque liberado corretamente",
+        "Nenhum produto permanece bloqueado",
+        "Mensagem de erro clara ao cliente",
+        "Log de auditoria completo"
+      ],
+      "ferramenta": "Postman (simular rejeição) / RestAssured (validar rollback)",
+      "automacao": "Sim — teste automatizado com WireMock"
+    },
+    {
+      "id": "CT-036",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RF003",
+        "FP-REQ-003",
+        "RNF017"
+      ],
+      "descricao": "Cliente tenta criar pedido com produto sem estoque e sistema rejeita com mensagem clara",
+      "pre_condicoes": [
+        "Produto \"Bolo de Macaxeira\" tem 0 unidades no estoque",
+        "Produto marcado como indisponível no cardápio",
+        "Cliente não vê produto na lista inicial (ou vê cinzento/desabilitado)"
+      ],
+      "passos_execucao": [
+        "1. Cliente abre cardápio da unidade",
+        "2. \"Bolo de Macaxeira\" não aparece na lista (ou aparece cinzento com label \"Indisponível\")",
+        "3. Cliente tenta buscar o produto por nome",
+        "4. Sistema exibe: \"Desculpe, este produto está indisponível no momento\"",
+        "5. Se cliente forçar submissão: sistema valida estoque na Camada 3, rejeita requisição (\"Produto indisponível\"), retorna HTTP 400/422 e exibe mensagem ao cliente"
+      ],
+      "dados_entrada": [
+        "produto_id: \"BOLO-001\"",
+        "quantidade_solicitada: 2",
+        "quantidade_estoque: 0",
+        "status_produto: \"INDISPONÍVEL\""
+      ],
+      "resultado_esperado": [
+        "Produto não aparece no cardápio (ou aparece desabilitado)",
+        "Se cliente tentar forçar submissão, recebe erro 400",
+        "Mensagem: \"Produto indisponível\"",
+        "Pedido não é criado"
+      ],
+      "criterio_aceite": [
+        "100% de rejeição para produtos sem estoque",
+        "Nenhum pedido criado com produto indisponível",
+        "Mensagem clara em português",
+        "Produto fica indisponível até reabastecimento",
+        "Log registra tentativa"
+      ],
+      "ferramenta": "Appium / Postman",
+      "automacao": "Sim — teste unitário para validação de estoque"
+    },
+    {
+      "id": "CT-045",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RNF014",
+        "RNF009"
+      ],
+      "descricao": "Usuário tenta fazer login com senha incorreta 5+ vezes em 15 minutos e conta é bloqueada temporariamente",
+      "pre_condicoes": [
+        "Rate limiting implementado: máx. 5 tentativas a cada 15 minutos",
+        "Usuário: \"teste@raizes.com.br\"",
+        "Senha correta: \"Senha123!\""
+      ],
+      "passos_execucao": [
+        "1. Tentativa 1: senha \"errada123\" — REJEIÇÃO (tentativas restantes: 4)",
+        "2. Tentativa 2: senha \"outra\" — REJEIÇÃO (tentativas restantes: 3)",
+        "3. Tentativa 3: senha \"teste\" — REJEIÇÃO (tentativas restantes: 2)",
+        "4. Tentativa 4: senha \"123456\" — REJEIÇÃO (tentativas restantes: 1)",
+        "5. Tentativa 5: senha \"abcdef\" — REJEIÇÃO (tentativas restantes: 0)",
+        "6. Tentativa 6 (mesmo intervalo de 15 min): BLOQUEIO — \"Conta bloqueada por 15 minutos. Tente novamente após [horário]\"",
+        "7. Aguardar 15 minutos",
+        "8. Tentativa 6 (após 15 min): login funciona normalmente"
+      ],
+      "dados_entrada": [
+        "email: \"teste@raizes.com.br\"",
+        "max_tentativas: 5",
+        "janela_tempo: 15 minutos",
+        "senhas_testadas: [\"errada123\", \"outra\", \"teste\", \"123456\", \"abcdef\"]"
+      ],
+      "resultado_esperado": [
+        "Após 5 tentativas falhas, bloqueio ativado",
+        "Mensagem de bloqueio clara com horário de desbloqueio",
+        "Após 15 minutos, conta desbloqueada automaticamente",
+        "Log registra todas as tentativas"
+      ],
+      "criterio_aceite": [
+        "5 tentativas permitidas em 15 minutos",
+        "6ª tentativa bloqueada com HTTP 429 (Too Many Requests)",
+        "Mensagem clara sobre bloqueio",
+        "Desbloqueio automático após 15 minutos",
+        "Log de tentativas completo"
+      ],
+      "ferramenta": "Postman (automatizar 6 requisições seguidas) / JUnit (testes de timing)",
+      "automacao": "Sim — script Postman ou JUnit para simular tentativas"
+    },
+    {
+      "id": "CT-048",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RNF012",
+        "RNF010",
+        "RNF013"
+      ],
+      "descricao": "Executar OWASP ZAP scan na aplicação em busca de vulnerabilidades comuns (SQL Injection, XSS, CSRF, etc.)",
+      "pre_condicoes": [
+        "OWASP ZAP instalado e configurado",
+        "URL da aplicação: https://app.raizesdonordeste.com.br",
+        "Permissão para fazer teste de segurança",
+        "Baseline configurado"
+      ],
+      "passos_execucao": [
+        "1. Iniciar OWASP ZAP",
+        "2. Configurar URL-alvo: https://app.raizesdonordeste.com.br",
+        "3. Executar \"Automated Scan\" (Spider + Active Scan)",
+        "4. Deixar executar por ~30 minutos",
+        "5. Analisar relatório de vulnerabilidades",
+        "6. Filtrar por severidade: ALTA, CRÍTICA",
+        "7. Documentar cada vulnerabilidade encontrada",
+        "8. Gerar relatório HTML"
+      ],
+      "dados_entrada": [
+        "URL-alvo: https://app.raizesdonordeste.com.br",
+        "Tipo de teste: Automated Scan",
+        "Scope: todas as páginas",
+        "Ataques testados: SQLi, XSS, CSRF, etc."
+      ],
+      "resultado_esperado": [
+        "Zero vulnerabilidades CRÍTICAS ou ALTAS",
+        "Vulnerabilidades MÉDIAS documentadas e com plano de remediação",
+        "Relatório claro e anexado"
+      ],
+      "criterio_aceite": [
+        "Zero vulnerabilidades CRÍTICAS",
+        "Zero vulnerabilidades ALTAS (ou máximo 1 com justificativa)",
+        "Todas as vulnerabilidades MÉDIAS têm plano de fix",
+        "Relatório OWASP ZAP assinado e datado"
+      ],
+      "ferramenta": "OWASP ZAP",
+      "automacao": "Sim — scan automatizado do OWASP ZAP"
+    },
+    {
+      "id": "CT-050",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RNF011",
+        "FP-REQ-004"
+      ],
+      "descricao": "Verificar que dados sensíveis (CPF, E-mail, Histórico de Pagamentos) estão criptografados no banco de dados em repouso",
+      "pre_condicoes": [
+        "Acesso ao banco de dados de teste",
+        "Ferramenta de consulta SQL (SQL Server Management Studio / MySQL Workbench)",
+        "Chave de criptografia documentada"
+      ],
+      "passos_execucao": [
+        "1. Conectar ao banco de dados",
+        "2. Executar query: SELECT cpf, email, historico_pagamentos FROM clientes WHERE cliente_id = 'CLI-12345'",
+        "3. Verificar resultado: CPF deve estar como hash/criptografado, não em plaintext",
+        "4. Exemplo de plaintext INVÁLIDO: \"123.456.789-00\"",
+        "5. Exemplo de criptografado VÁLIDO: \"a3f5b9e2c1d7...\" (hash)",
+        "6. Verificar se email está criptografado",
+        "7. Verificar se histórico de pagamentos está criptografado",
+        "8. Documentar resultados"
+      ],
+      "dados_entrada": [
+        "cliente_id: \"CLI-12345\"",
+        "cpf_esperado: CRIPTOGRAFADO (não plaintext)",
+        "email_esperado: CRIPTOGRAFADO",
+        "historico_pagamentos_esperado: CRIPTOGRAFADO"
+      ],
+      "resultado_esperado": [
+        "100% dos dados sensíveis estão criptografados",
+        "Nenhum valor em plaintext",
+        "Chave de criptografia separada do BD"
+      ],
+      "criterio_aceite": [
+        "CPF criptografado no BD",
+        "E-mail criptografado",
+        "Histórico de pagamentos criptografado",
+        "Zero valores em plaintext",
+        "Chave armazenada separadamente (vault/HSM)",
+        "Relatório de inspeção assinado"
+      ],
+      "ferramenta": "SQL Server Management Studio / MySQL Workbench + Script de verificação",
+      "automacao": "Parcial — script SQL automatizado para verificar criptografia"
+    },
+    {
+      "id": "CT-053",
+      "tipo": "negativo",
+      "requisito_vinculado": [
+        "RNF013",
+        "FP-REQ-004"
+      ],
+      "descricao": "Verificar que todos os acessos a dados pessoais são registrados em log de auditoria com timestamp, usuário, ação e resultado",
+      "pre_condicoes": [
+        "Sistema com log de auditoria implementado",
+        "Acesso a arquivo de logs ou tabela de auditoria no BD",
+        "Operação anterior realizada: cliente visualizou seus dados"
+      ],
+      "passos_execucao": [
+        "1. Cliente \"João Silva\" (CPF 123.456.789-00) faz login",
+        "2. Cliente acessa \"Meus Dados\" (nome, CPF, email)",
+        "3. Sistema registra no log de auditoria: timestamp, usuario_id, acao, dados_acessados, resultado, ip, user_agent",
+        "4. Consultar tabela auditoria_lgpd",
+        "5. Verificar se registro foi criado com todas as informações"
+      ],
+      "dados_entrada": [
+        "usuario_id: \"CLI-12345\"",
+        "acao: \"ACESSO_DADOS_PESSOAIS\"",
+        "dados_acessados: [ \"CPF\", \"EMAIL\" ]",
+        "timestamp_esperado: data/hora do acesso"
+      ],
+      "resultado_esperado": [
+        "Log criado imediatamente após acesso",
+        "Todas as informações presentes",
+        "Timestamp preciso (dentro de 1 segundo do acesso)",
+        "Log imutável (não pode ser editado/deletado)"
+      ],
+      "criterio_aceite": [
+        "Log criado para cada acesso a dados pessoais",
+        "Timestamp, usuário, ação, dados e resultado registrados",
+        "Log é imutável (append-only)",
+        "Log acessível para auditoria LGPD",
+        "Zero gaps ou dados faltando",
+        "100 acessos testados → 100 logs criados"
+      ],
+      "ferramenta": "SQL / Log viewer (ELK, Splunk) / Script de verificação",
+      "automacao": "Parcial — query automatizada para verificar logs"
+    }
+  ]
+}

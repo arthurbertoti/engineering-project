@@ -1,0 +1,262 @@
+{
+  "Cliente": [
+    {
+      "campo": "nome",
+      "valor": "João Silva",
+      "descricao": "Cliente padrão para testes felizes"
+    },
+    {
+      "campo": "cpf",
+      "valor": "123.456.789-00",
+      "descricao": "CPF válido (formatado)"
+    },
+    {
+      "campo": "email",
+      "valor": "joao.silva@email.com",
+      "descricao": "Email válido"
+    },
+    {
+      "campo": "telefone",
+      "valor": "(81) 98765-4321",
+      "descricao": "Telefone válido"
+    },
+    {
+      "campo": "unidade_preferida",
+      "valor": "REC-001",
+      "descricao": "Recife - Centro"
+    },
+    {
+      "campo": "saldo_pontos_inicial",
+      "valor": "50",
+      "descricao": "Pontos antes do teste"
+    },
+    {
+      "campo": "consentimento_lgpd",
+      "valor": "SIM",
+      "descricao": "LGPD aceito com data/hora"
+    }
+  ],
+  "Produto": [
+    {
+      "campo": "produto_id",
+      "valor": "TAPI-001",
+      "descricao": "Identificador único"
+    },
+    {
+      "campo": "nome",
+      "valor": "Tapioca de Carne",
+      "descricao": "Nome do produto"
+    },
+    {
+      "campo": "preco",
+      "valor": "15.00",
+      "descricao": "Preço em R$"
+    },
+    {
+      "campo": "estoque_inicial",
+      "valor": "100",
+      "descricao": "Quantidade disponível"
+    },
+    {
+      "campo": "categoria",
+      "valor": "Salgados",
+      "descricao": "Categoria do cardápio"
+    },
+    {
+      "campo": "unidades",
+      "valor": "[REC-001, SAL-002, FOR-001]",
+      "descricao": "Unidades que oferecem"
+    }
+  ],
+  "Pedido (Sucesso)": [
+    {
+      "campo": "pedido_id",
+      "valor": "PED-001",
+      "descricao": "ID único gerado pelo sistema"
+    },
+    {
+      "campo": "cliente_id",
+      "valor": "CLI-12345",
+      "descricao": "Cliente do teste feliz"
+    },
+    {
+      "campo": "valor_subtotal",
+      "valor": "38.00",
+      "descricao": "Soma de produtos × quantidade"
+    },
+    {
+      "campo": "desconto_pontos",
+      "valor": "3.80",
+      "descricao": "Desconto aplicado (100 pontos)"
+    },
+    {
+      "campo": "valor_total",
+      "valor": "34.20",
+      "descricao": "Subtotal - desconto"
+    },
+    {
+      "campo": "status",
+      "valor": "RECEBIDO",
+      "descricao": "Status inicial"
+    },
+    {
+      "campo": "timestamp",
+      "valor": "2025-06-23 12:30:45",
+      "descricao": "Data/hora criação"
+    }
+  ],
+  "Pedido (Erro)": [
+    {
+      "campo": "pedido_id",
+      "valor": "PED-002",
+      "descricao": "ID para teste de rejeição"
+    },
+    {
+      "campo": "status_esperado",
+      "valor": "CANCELADO",
+      "descricao": "Status após rejeição pagamento"
+    },
+    {
+      "campo": "motivo_rejeicao",
+      "valor": "PAGAMENTO_RECUSADO",
+      "descricao": "Razão do cancelamento"
+    }
+  ],
+  "Pagamento (Sucesso)": [
+    {
+      "campo": "transacao_id",
+      "valor": "TRX-001",
+      "descricao": "ID da transação no gateway"
+    },
+    {
+      "campo": "valor",
+      "valor": "34.20",
+      "descricao": "Valor a cobrar"
+    },
+    {
+      "campo": "metodo",
+      "valor": "PIX",
+      "descricao": "Método escolhido"
+    },
+    {
+      "campo": "status_gateway",
+      "valor": "APROVADO",
+      "descricao": "Resposta do gateway simulado"
+    }
+  ],
+  "Pagamento (Erro)": [
+    {
+      "campo": "transacao_id",
+      "valor": "TRX-002",
+      "descricao": "ID da transação rejeitada"
+    },
+    {
+      "campo": "status_gateway",
+      "valor": "REJEITADO",
+      "descricao": "Resposta do gateway"
+    },
+    {
+      "campo": "motivo",
+      "valor": "CARTAO_INVALIDO",
+      "descricao": "Motivo da rejeição"
+    }
+  ],
+  "Fidelização": [
+    {
+      "campo": "cliente_id",
+      "valor": "CLI-12345",
+      "descricao": "Cliente acumulando pontos"
+    },
+    {
+      "campo": "valor_pedido",
+      "valor": "100.00",
+      "descricao": "Valor que gera pontos"
+    },
+    {
+      "campo": "taxa_acumulo",
+      "valor": "1.0",
+      "descricao": "1 ponto por real"
+    },
+    {
+      "campo": "pontos_esperados",
+      "valor": "100",
+      "descricao": "Pontos a acumular"
+    },
+    {
+      "campo": "saldo_novo",
+      "valor": "150",
+      "descricao": "Novo saldo após acúmulo"
+    }
+  ],
+  "Segurança": [
+    {
+      "campo": "usuario_teste",
+      "valor": "teste@raizes.com.br",
+      "descricao": "Email para testes de login"
+    },
+    {
+      "campo": "senha_correta",
+      "valor": "Senha123!",
+      "descricao": "Senha correta"
+    },
+    {
+      "campo": "senha_incorreta",
+      "valor": "errada123",
+      "descricao": "Senha para teste de rejeição"
+    },
+    {
+      "campo": "max_tentativas",
+      "valor": "5",
+      "descricao": "Tentativas antes de bloqueio"
+    },
+    {
+      "campo": "janela_bloqueio",
+      "valor": "15 minutos",
+      "descricao": "Tempo de bloqueio"
+    }
+  ],
+  "Performance": [
+    {
+      "campo": "threads_jmeter",
+      "valor": "100",
+      "descricao": "Usuários simultâneos (CT-040)"
+    },
+    {
+      "campo": "ramp_up",
+      "valor": "30 segundos",
+      "descricao": "Tempo para adicionar usuários"
+    },
+    {
+      "campo": "duration",
+      "valor": "600 segundos",
+      "descricao": "10 minutos de teste"
+    },
+    {
+      "campo": "think_time",
+      "valor": "1 segundo",
+      "descricao": "Pausa entre requisições"
+    }
+  ],
+  "Disponibilidade": [
+    {
+      "campo": "periodo_teste",
+      "valor": "30 dias",
+      "descricao": "Duração do teste (CT-043)"
+    },
+    {
+      "campo": "check_frequency",
+      "valor": "5 minutos",
+      "descricao": "Frequência de verificação"
+    },
+    {
+      "campo": "uptime_minimo",
+      "valor": "99.5%",
+      "descricao": "Meta de disponibilidade"
+    },
+    {
+      "campo": "downtime_maximo",
+      "valor": "216 minutos",
+      "descricao": "3,6 horas máximas"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "exemplos_log_auditoria": [
+    {
+      "cenario": "Cliente acessa seus próprios dados",
+      "timestamp": "2025-06-23 12:45:30",
+      "usuario_tipo": "CLIENTE",
+      "usuario_id": "CLI-12345",
+      "acao": "ACESSO_DADOS_PROPRIOS",
+      "dados_acessados": [
+        "nome",
+        "cpf",
+        "email"
+      ],
+      "resultado": "SUCESSO",
+      "ip": "192.168.1.100",
+      "duracao_ms": 250,
+      "observacoes": "Via app Android"
+    },
+    {
+      "cenario": "Admin acessa dados de cliente (suporte)",
+      "timestamp": "2025-06-23 14:00:15",
+      "usuario_tipo": "ADMIN",
+      "usuario_id": "ADMIN-01",
+      "acao": "ADMIN_ACESSO_DADOS_CLIENTE",
+      "cliente_acessado": "CLI-12345",
+      "dados_acessados": [
+        "nome",
+        "email"
+      ],
+      "resultado": "SUCESSO",
+      "ip": "10.0.1.50 (rede interna)",
+      "justificativa": "Suporte - Pedido #001",
+      "duracao_ms": 150
+    },
+    {
+      "cenario": "Tentativa de acesso não autorizado",
+      "timestamp": "2025-06-23 15:30:45",
+      "usuario_tipo": "USUARIO_NAO_AUTENTICADO",
+      "usuario_id": null,
+      "acao": "TENTATIVA_ACESSO_DADOS",
+      "cliente_alvo": "CLI-12345",
+      "dados_solicitados": [
+        "cpf",
+        "email"
+      ],
+      "resultado": "FALHA_AUTENTICACAO",
+      "ip": "203.45.67.89 (IP desconhecido)",
+      "duracao_ms": 0,
+      "observacoes": "ALERTA: IP suspeito"
+    }
+  ],
+  "analise_trimestral": {
+    "periodo": "01/04/2025 a 30/06/2025",
+    "total_acessos": 15432,
+    "acessos_cliente_proprio": {
+      "qtd": 14200,
+      "pct": "92%"
+    },
+    "acessos_admin_suporte": {
+      "qtd": 1100,
+      "pct": "7%"
+    },
+    "tentativas_nao_autorizado": {
+      "qtd": 132,
+      "pct": "0.9%"
+    },
+    "acessos_sistema_automatico": {
+      "qtd": 0,
+      "pct": "0%"
+    },
+    "alertas_seguranca": {
+      "ips_unicos_suspeitos": 12,
+      "tentativas_forca_bruta": 0,
+      "acessos_fora_horario": 15,
+      "acessos_admin_simultaneos_gt5": {
+        "qtd": 2,
+        "observacao": "justificadas: backup"
+      }
+    }
+  }
+}
