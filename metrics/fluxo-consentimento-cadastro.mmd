@@ -1,0 +1,12 @@
+flowchart TD
+    A[Cliente novo abre o app] --> B["Tela de Cadastro:<br/>'Vamos conhecer você!'<br/>'Seus dados são protegidos conforme LGPD'"]
+    B --> C[Preenche dados obrigatórios:<br/>Nome, CPF, Email]
+    C --> D{Marca dados opcionais?<br/>Data nascimento / histórico /<br/>promoções / SMS}
+    D -->|Sim| E[Consentimentos opcionais registrados]
+    D -->|Não| F[Segue sem consentimentos opcionais]
+    E --> G[Lê e aceita Política de Privacidade<br/>checkbox obrigatório]
+    F --> G
+    G --> H[Clica em 'Criar Conta Segura']
+    H --> I[Sistema valida dados e CPF]
+    I --> J[Sistema registra: hash da senha,<br/>consentimentos, timestamp, IP,<br/>versão da política aceita]
+    J --> K[Conta criada +<br/>email de confirmação enviado]

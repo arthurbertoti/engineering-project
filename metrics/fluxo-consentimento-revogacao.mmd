@@ -1,0 +1,7 @@
+flowchart TD
+    A["Cliente clica 'Revogar' em<br/>'Histórico de Compras'"] --> B[Modal de confirmação:<br/>explica o que será perdido]
+    B --> C{Cliente confirma?}
+    C -->|Cancelar| D[Nada é alterado]
+    C -->|"Sim, revogar"| E[Sistema registra:<br/>data/hora, IP, dado revogado]
+    E --> F[Log gravado em<br/>auditoria_lgpd]
+    F --> G["Confirmação ao cliente:<br/>'Consentimento revogado'"]

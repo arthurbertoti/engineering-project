@@ -1,0 +1,11 @@
+flowchart TD
+    A[Cliente acessa Menu > Privacidade e Dados] --> B[Tela: Meus Consentimentos]
+    B --> C[Visualiza dados pessoais<br/>criptografados no servidor]
+    B --> D[Visualiza consentimentos ativos:<br/>Histórico de Compras, Promoções, SMS]
+    B --> E[Visualiza Direitos LGPD]
+    E --> F[Baixar meus dados<br/>JSON - Art. 20 LGPD]
+    E --> G[Deletar meus dados<br/>Art. 17 LGPD]
+    E --> H[Ver histórico de acesso<br/>auditoria]
+    D --> I{Cliente decide sobre<br/>um consentimento}
+    I -->|Revogar| J[Segue para fluxo de Revogação]
+    I -->|Ativar novo| K[Consentimento registrado<br/>com timestamp e IP]
