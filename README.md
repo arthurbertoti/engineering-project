@@ -9,7 +9,7 @@ da Trilha de Qualidade de Software (UNINTER).
 
 ## Documento Principal
 
-O documento completo (`4851461_Projeto_Qualidade.PDF`) está em [`docs/PROJETO_MULTIDISCIPLINAR.pdf`](docs/PROJETO_MULTIDISCIPLINAR.pdf).
+O documento completo (`4851461_Projeto_Qualidade.pdf`) está em [`docs/4851461_Projeto_Qualidade.pdf`](docs/4851461_Projeto_Qualidade.pdf).
 Este repositório contém apenas os artefatos de apoio referenciados nas Seções 10, 11 e 12 do documento.
 
 ## Estrutura
